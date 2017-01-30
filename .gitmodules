@@ -1,0 +1,7 @@
+[submodule "Kha"]
+
+	path = Kha
+
+	url = git@github.com:KTXSoftware/Kha.git
+
+	branch = master
