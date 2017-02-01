@@ -151,12 +151,12 @@ class Empty {
 		// A graphics object which lets us perform 3D operations
 		var g = frame.g4;
 
+		// Clear screen
+		g.clear(Color.fromFloats(0.0, 0.0, 0.3), 1.0);
+
 		for (eye in 0...2) {
 			// Begin rendering
-        	g.begin(); // TODO: set viewport for left/right eye 
-
-        	// Clear screen
-			g.clear(Color.fromFloats(0.0, 0.0, 0.3), 1.0);
+        	g.beginEye(eye);
 
 			// Bind data we want to draw
 			g.setVertexBuffer(vertexBuffer);
