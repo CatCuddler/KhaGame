@@ -24,6 +24,7 @@ import kha.math.FastMatrix4;
 import kha.math.FastVector3;
 
 import kha.vr.VrInterface;
+import kha.vr.SensorState;
 
 class Empty {
 
@@ -186,6 +187,19 @@ class Empty {
     }
 
     public function update() {
+		// Test: get pose
+		if (vrInstance.vrEnabled) {
+			var sensorState: SensorState = vrInstance.GetSensorState();
+
+			trace("Angular Vel: " + sensorState.Predicted.AngularVelocity);
+			trace("Angular Acc: " + sensorState.Predicted.AngularAcceleration);
+			trace("Linear Vel: " + sensorState.Predicted.LinearVelocity);
+			trace("Linear Acc: " + sensorState.Predicted.LinearAcceleration);
+			trace("Position: " + sensorState.Predicted.Pose.Position);
+			trace("Orientation: " + sensorState.Predicted.Pose.Orientation);
+		}
+
+
     	// Compute time difference between current and last frame
 		var deltaTime = Scheduler.time() - lastTime;
 		lastTime = Scheduler.time();
