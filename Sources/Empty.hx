@@ -28,6 +28,8 @@ import kha.vr.SensorState;
 
 class Empty {
 
+	var debug:Bool = false;
+
 	var vrInstance:VrInterface;
 
 	var vertexBuffer:VertexBuffer;
@@ -188,7 +190,7 @@ class Empty {
 
     public function update() {
 		// Test: get pose
-		if (vrInstance.vrEnabled) {
+		if (vrInstance.vrEnabled && debug) {
 			var sensorState: SensorState = vrInstance.GetSensorState();
 
 			trace("Angular Vel: " + sensorState.Predicted.AngularVelocity);
