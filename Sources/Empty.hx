@@ -22,15 +22,13 @@ import kha.graphics4.CompareMode;
 import kha.graphics4.CullMode;
 import kha.math.FastMatrix4;
 import kha.math.FastVector3;
-
 import kha.vr.VrInterface;
+
 import kha.vr.SensorState;
 
 class Empty {
 
 	var debug:Bool = false;
-
-	var vrInstance:VrInterface;
 
 	var vertexBuffer:VertexBuffer;
 	var indexBuffer:IndexBuffer;
@@ -59,9 +57,6 @@ class Empty {
     }
 
 	function loadingFinished() {
-		// Create vr display
-		vrInstance = new VrInterface();
-
 		// Define vertex structure
 		var structure = new VertexStructure();
         structure.add("pos", VertexData.Float3);
@@ -93,7 +88,7 @@ class Empty {
 		textureID = pipeline.getTextureUnit("diffuse");
 
 		// Texture
-		image = Assets.images.uvmap;
+		image = Assets.images.tigeratlas;
 
 		// Projection matrix: 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
 		projection = FastMatrix4.perspectiveProjection(45.0, 4.0 / 3.0, 0.1, 100.0);
@@ -112,7 +107,7 @@ class Empty {
 		model = model.multmat(t);
 
 		// Parse .obj file
-		var obj = new ObjLoader(Assets.blobs.cube_obj.toString());
+		var obj = new ObjLoader(Assets.blobs.tiger_obj.toString());
 		var data = obj.data;
 		var indices = obj.indices;
 
@@ -169,9 +164,9 @@ class Empty {
 			g.setPipeline(pipeline);
 
 			// Set our transformation to the currently bound shader
-			if (vrInstance.vrEnabled) {
-				projection = vrInstance.getProjectionMatrix(eye);
-				view = vrInstance.getViewMatrix(eye);
+			if (VrInterface.instance.IsPresenting()) {
+				projection = VrInterface.instance.GetProjectionMatrix(eye);
+				view = VrInterface.instance.GetViewMatrix(eye);
 			}
 			g.setMatrix(projectionID, projection);
 			g.setMatrix(viewID, view);
@@ -189,9 +184,13 @@ class Empty {
     }
 
     public function update() {
-		// Test: get pose
-		if (vrInstance.vrEnabled && debug) {
-			var sensorState: SensorState = vrInstance.GetSensorState();
+		// Compute time difference between current and last frame
+		var deltaTime = Scheduler.time() - lastTime;
+		lastTime = Scheduler.time();
+
+		// Test: get predicted pose
+		if (VrInterface.instance.IsPresenting() && debug) {
+			var sensorState: SensorState = VrInterface.instance.GetPredictedSensorState(lastTime);
 
 			trace("Angular Vel: " + sensorState.Predicted.AngularVelocity);
 			trace("Angular Acc: " + sensorState.Predicted.AngularAcceleration);
@@ -200,11 +199,6 @@ class Empty {
 			trace("Position: " + sensorState.Predicted.Pose.Position);
 			trace("Orientation: " + sensorState.Predicted.Pose.Orientation);
 		}
-
-
-    	// Compute time difference between current and last frame
-		var deltaTime = Scheduler.time() - lastTime;
-		lastTime = Scheduler.time();
 
 		// Direction : Spherical coordinates to Cartesian coordinates conversion
 		var direction = new FastVector3(
