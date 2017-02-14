@@ -26,6 +26,8 @@ import kha.vr.VrInterface;
 
 import kha.vr.SensorState;
 
+import js.Browser;
+
 class Empty {
 
 	var debug:Bool = false;
@@ -50,6 +52,8 @@ class Empty {
 	var position:FastVector3 = new FastVector3(0, 0, 5); // Initial position: on +Z
 	var horizontalAngle = 3.14; // Initial horizontal angle: toward -Z
 	var verticalAngle = 0.0; // Initial vertical angle: none
+
+	var vrButton: Dynamic;
 
 	public function new() {
     	// Load all assets defined in khafile.js
@@ -137,6 +141,13 @@ class Empty {
 			iData[i] = indices[i];
 		}
 		indexBuffer.unlock();
+
+		if(VrInterface.instance.IsVrEnabled()) {
+			createResetPoseButton();
+			createEnterVrButton();
+		}
+		// Add keyboard listeners
+		kha.input.Keyboard.get().notify(onKeyDown, onKeyUp);
 
 		// Used to calculate delta time
 		lastTime = Scheduler.time();
@@ -226,4 +237,65 @@ class Empty {
 							  up // Head is up (set to (0, -1, 0) to look upside-down)
 		);
     }
+
+	// WEB VR Buttons
+	private function createEnterVrButton(): Void {
+		if (vrButton != null)
+			Browser.document.body.removeChild(vrButton);
+
+		vrButton = Browser.document.createButtonElement();
+		vrButton.textContent = "Enter VR";
+		vrButton.onclick = function(event) {
+			VrInterface.instance.onVRRequestPresent();
+			onVRPresentChange();
+		}
+		Browser.document.body.appendChild(vrButton);
+	}
+
+	private function createExitVrButton(): Void {
+		if (vrButton != null)
+			Browser.document.body.removeChild(vrButton);
+
+		vrButton = Browser.document.createButtonElement();
+		vrButton.textContent = "Exit VR";
+		vrButton.onclick = function(event) {
+			VrInterface.instance.onVRExitPresent();
+			onVRPresentChange();
+		}
+		Browser.document.body.appendChild(vrButton);
+	}
+
+	private function createResetPoseButton(): Void {
+		// Reset pose button
+		var resetButton = Browser.document.createButtonElement();
+		resetButton.textContent = "Reset Pose!";
+		resetButton.onclick = function(event) {
+			VrInterface.instance.onResetPose();
+		}
+		Browser.document.body.appendChild(resetButton);
+	}
+
+	private function onVRPresentChange () {
+		if (VrInterface.instance.IsPresenting()) {
+			createExitVrButton();
+		} else {
+			createEnterVrButton();
+		}
+	}
+
+	function onKeyDown(key: Key, char: String) {
+		if(char == "e" || char == "E") {
+			if (VrInterface.instance.IsPresenting()) {
+				VrInterface.instance.onVRExitPresent();
+			} else {
+				VrInterface.instance.onVRRequestPresent();
+			}
+		} else if (char == "r" || char == "R") {
+			VrInterface.instance.onResetPose();
+		}
+	}
+
+	function onKeyUp(key: Key, char: String) {
+
+	}
 }
