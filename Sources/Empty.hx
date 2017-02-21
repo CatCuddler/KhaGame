@@ -160,12 +160,41 @@ class Empty {
 		// A graphics object which lets us perform 3D operations
 		var g = frame.g4;
 
-		// Clear screen
-		g.clear(Color.fromFloats(0.0, 0.0, 0.3), 1.0);
+		if (VrInterface.instance.IsPresenting()) {
+			// Clear screen
+			g.clear(Color.fromFloats(0.0, 0.0, 0.3), 1.0);
 
-		for (eye in 0...2) {
-			// Begin rendering
-        	g.beginEye(eye);
+			for (eye in 0...2) {
+				// Begin rendering
+				g.beginEye(eye);
+
+				// Bind data we want to draw
+				g.setVertexBuffer(vertexBuffer);
+				g.setIndexBuffer(indexBuffer);
+
+				// Bind state we want to draw with
+				g.setPipeline(pipeline);
+
+				// Set our transformation to the currently bound shader
+				projection = VrInterface.instance.GetProjectionMatrix(eye);
+				view = VrInterface.instance.GetViewMatrix(eye);
+				g.setMatrix(projectionID, projection);
+				g.setMatrix(viewID, view);
+				g.setMatrix(modelID, model);
+
+				// Set texture
+				g.setTexture(textureID, image);
+
+				// Draw!
+				g.drawIndexedVertices();
+
+				// End rendering
+				g.end();
+			}
+		} else {
+
+			g.clear();
+			g.begin();
 
 			// Bind data we want to draw
 			g.setVertexBuffer(vertexBuffer);
@@ -175,10 +204,6 @@ class Empty {
 			g.setPipeline(pipeline);
 
 			// Set our transformation to the currently bound shader
-			if (VrInterface.instance.IsPresenting()) {
-				projection = VrInterface.instance.GetProjectionMatrix(eye);
-				view = VrInterface.instance.GetViewMatrix(eye);
-			}
 			g.setMatrix(projectionID, projection);
 			g.setMatrix(viewID, view);
 			g.setMatrix(modelID, model);
@@ -191,7 +216,10 @@ class Empty {
 
 			// End rendering
 			g.end();
+
 		}
+
+		
     }
 
     public function update() {
