@@ -162,7 +162,7 @@ class Empty {
 
 		if (VrInterface.instance.IsPresenting()) {
 			// Clear screen
-			g.clear(Color.fromFloats(0.0, 0.0, 0.3), 1.0);
+			g.clear();
 
 			for (eye in 0...2) {
 				// Begin rendering
@@ -192,9 +192,10 @@ class Empty {
 				g.end();
 			}
 		} else {
-
-			g.clear();
 			g.begin();
+
+			// Clear screen
+			g.clear();
 
 			// Bind data we want to draw
 			g.setVertexBuffer(vertexBuffer);
