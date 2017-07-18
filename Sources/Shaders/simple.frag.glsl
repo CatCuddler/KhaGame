@@ -1,10 +1,9 @@
-#ifdef GL_ES
-precision mediump float;
-#endif
+#version 450
 
-varying vec2 texCoord;
+in vec2 texCoord;
 uniform sampler2D diffuse;
+out vec4 FragColor;
 
 void kore() {
-	gl_FragColor = texture2D(diffuse, texCoord);
+	FragColor = texture(diffuse, texCoord);
 }

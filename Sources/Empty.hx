@@ -6,7 +6,6 @@ import kha.Shaders;
 import kha.Assets;
 import kha.Image;
 import kha.Scheduler;
-import kha.Key;
 import kha.System;
 import kha.graphics4.TextureUnit;
 import kha.graphics4.PipelineState;
@@ -23,6 +22,7 @@ import kha.graphics4.CullMode;
 import kha.math.FastMatrix4;
 import kha.math.FastVector3;
 import kha.vr.VrInterface;
+import kha.input.KeyCode;
 
 import kha.vr.SensorState;
 
@@ -312,19 +312,19 @@ class Empty {
 		}
 	}
 
-	function onKeyDown(key: Key, char: String) {
-		if(char == "e" || char == "E") {
+	function onKeyDown(key: kha.input.KeyCode) {
+		if(key == KeyCode.E) {
 			if (VrInterface.instance.IsPresenting()) {
 				VrInterface.instance.onVRExitPresent();
 			} else {
 				VrInterface.instance.onVRRequestPresent();
 			}
-		} else if (char == "r" || char == "R") {
+		} else if (key == KeyCode.R) {
 			VrInterface.instance.onResetPose();
 		}
 	}
 
-	function onKeyUp(key: Key, char: String) {
+	function onKeyUp(key: kha.input.KeyCode) {
 
 	}
 }
